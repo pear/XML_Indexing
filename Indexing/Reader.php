@@ -187,8 +187,8 @@ class XML_Indexing_Reader {
      * Needed by the fetchStrings() method when bypassing indexing
      * @see XML_Indexing_Reader::fetchStrings()
      * @see XML_Indexing_Reader::bypass()
-     * var object
-     * @access _private
+     * @var object
+     * @access private
      */
      var $_domDocument;
     
@@ -198,7 +198,25 @@ class XML_Indexing_Reader {
      * @access private
      */
     var $_phpVersion;
-     
+   
+    /**
+     * Cached XML_Unserializer object
+     * 
+     * @see XML_Indexing_Reader::fetchArray()
+     * @var object
+     * @access private
+     */
+    var $_unserializer;
+
+    /**
+     * Cached XML_Unserializer options
+     * 
+     * @see XML_Indexing_Reader::fetchArray()
+     * @var array
+     * @access private
+     */
+    var $_unserializerOptions;
+    
     /**
      * Constructor
      * 
@@ -487,6 +505,7 @@ class XML_Indexing_Reader {
      */
     function _bypass($xpathStr)
     {
+        $this->_enterSection('_bypass');
         if ($this->_phpVersion == 5) {
             $doc = DomDocument::load($this->_xmlFilename);
             $xpath = new DomXpath($doc);
@@ -517,6 +536,7 @@ class XML_Indexing_Reader {
             unset ($result);
             unset ($xpath);
         }
+        $this->_leaveSection('_bypass');
         return $numResults;
     }
     
@@ -664,6 +684,41 @@ class XML_Indexing_Reader {
         }
         $this->_leaveSection('fetchDomNodes');
         return $result;
+    }
+   
+    /**
+     * Fetch a set of XML matches as an unserialized Array
+     * 
+     * This method use XML_Unserializer to turn the extracted strings into a 
+     * familiar array structure. You may want to look at XML_Unserializer 
+     * documentation, especially to learn about the options you can use when
+     * calling this method.
+     * 
+     * @param int   $offset  The n match to start fetching from 
+     *                       (zero based, default : 0)
+     * @param int   $limit   How many matches to fetch (default : all)
+     * @param array $options Options passed to XML_Unserializer's constructor
+     * @return array DomElements
+     * @access public
+     */
+    function fetchArray($offset = 0, $limit = null, $options = array()) 
+    {
+        $this->_enterSection('fetchArray');
+        if (!isset ($this->_unserializer) 
+                or $options != $this->_unserializerOptions) {
+            include_once ('XML/Unserializer.php');
+            $this->_unserializer =& new XML_Unserializer ($options);
+            $this->_unserializerOptions = $options;
+        }
+        $strings = $this->fetchStrings ($offset, $limit);
+        $reconstructed = '<root>' . join ('', $strings) . '</root>';
+        $status = $this->_unserializer->unserialize($reconstructed);
+        if (PEAR::isError ($status)) {
+            $this->_leaveSection('fetchArray');
+            return $status;
+        }
+        $this->_leaveSection('fetchArray');
+        return $this->_unserializer->getUnserializedData();
     }
     
     /**
