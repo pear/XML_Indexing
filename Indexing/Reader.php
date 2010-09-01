@@ -422,7 +422,7 @@ class XML_Indexing_Reader {
         $this->_regions = array();
         $this->_fetchCounter = 0;
         $sortRegions = false;
-        if (ereg('^([a-zA-Z0-9:._/-]+)$',$xpath, $regs)) {
+        if (preg_match('/^([a-zA-Z0-9:._/-]+)$/',$xpath, $regs)) {
             $root = $xpath;
             $test = $this->_openXML();
             if (PEAR::isError($test)) {
@@ -437,7 +437,7 @@ class XML_Indexing_Reader {
                     $this->_regions[] = $spec;
                 }
             }
-        } else if (ereg('^([a-zA-Z0-9:._/-]+)\[(.*)\]$',$xpath, $regs)) {
+        } else if (preg_match('/^([a-zA-Z0-9:._/-]+)\[(.*)\]$/',$xpath, $regs)) {
             $root = $regs[1];
             $expr = $regs[2];
             $test = $this->_openXML();
@@ -457,7 +457,7 @@ class XML_Indexing_Reader {
                         $this->_regions[] = $spec;
                     }
                 }
-            } else if (ereg('^@([a-zA-Z0-9:._-]+)=[\'"](.*)[\'"]$', $expr ,$regs)) {
+            } else if (preg_match('/^@([a-zA-Z0-9:._-]+)=[\'"](.*)[\'"]$/', $expr ,$regs)) {
                 $attr = $regs[1];
                 $value = stripcslashes($regs[2]);
                 if (!isset($this->_index[$root][$attr])) {
@@ -468,7 +468,7 @@ class XML_Indexing_Reader {
                         $this->_regions[] = $spec;
                     }
                 }
-            } else if (ereg('^@([a-zA-Z0-9:._-]+)$', $expr ,$regs)) {
+            } else if (preg_match('/^@([a-zA-Z0-9:._-]+)$/', $expr ,$regs)) {
                 $attr = $regs[1];
                 if (!isset($this->_index[$root][$attr])) {
                     $this->_buildIndex ('Attribute', $root, $attr);

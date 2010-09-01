@@ -321,7 +321,7 @@ class XML_Indexing_Builder
         if ($this->_cur_xpath == $this->_xroot) {
             $this->_endingTrigger = 1;
         }
-        $this->_cur_xpath = ereg_replace ("/$name$", '', $this->_cur_xpath);
+        $this->_cur_xpath = preg_replace("/\/$name$/", '', $this->_cur_xpath);
         if ($this->_cur_xpath == $this->_scopePattern) {
             $this->_exitScope();
         }
