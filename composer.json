@@ -1,0 +1,25 @@
+{
+    "authors": [
+        {
+            "email": "olivier@samalyse.com",
+            "name": "Olivier Guilyardi",
+            "role": "Lead"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "./"
+        ]
+    },
+    "description": "More info available on: http://pear.php.net/package/XML_Indexing",
+    "license": "PHP License",
+    "name": "pear/xml_indexing",
+    "support": {
+        "issues": "http:///bugs/search.php?cmd=display&package_name[]=XML_Indexing",
+        "source": "https://github.com/pear/XML_Indexing"
+    },
+    "type": "library",
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    }
+}
